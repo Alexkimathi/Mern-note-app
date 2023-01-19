@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { Container,Row, Col } from 'react-bootstrap';
+import styles from "./styles/notesPage.module.css"
 
 
-import './App.css';
-import { Note } from './models/node';
+
+import Note from './components/Note';
+import { Note as NoteModel } from './models/node';
 
 function App() {
 
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [notes, setNotes] = useState<NoteModel[]>([]);
 
   useEffect(() =>{
     async function loadNotes(){
@@ -27,10 +30,16 @@ function App() {
 
 
   return (
-    <div className="App">
-      {JSON.stringify(notes)}
+    <Container>
+      <Row xs ={1} md ={2} xl={3}>
+      {notes.map(note =>(
+        <Col key={note._id}>
+        <Note note={note} className ={styles.note}  />
+        </Col>
+      ))}
+      </Row>
   
-    </div>
+    </Container>
   );
 }
 
