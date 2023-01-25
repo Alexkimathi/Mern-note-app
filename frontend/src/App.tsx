@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
 import styles from "./styles/notesPage.module.css";
 import style from "./styles/utils.module.css";
 import * as NotesApi from "./Network/notes__api";
@@ -12,6 +12,8 @@ import AddEditNotes from "./components/AddEditNotes";
 
 function App() {
   const [notes, setNotes] = useState<NoteModel[]>([]);
+  const [notesLoading, setNotesLoading] = useState(true);
+  const [showNotesLoadingError, setShowNotesLoadingError] = useState(false);
 
   const [showAddNoteDialog, setShowAddNoteDialog] = useState(false);
   const [noteToEdit, setNoteToEdit] = useState<NoteModel|null>(null)
@@ -19,12 +21,16 @@ function App() {
   useEffect(() => {
     async function loadNotes() {
       try {
+        setShowNotesLoadingError(false);
+        setNotesLoading(true);
         const notes = await NotesApi.fetchNotes();
 
         setNotes(notes);
       } catch (error) {
         console.error(error);
-        alert(error);
+       setShowNotesLoadingError(true);
+      }finally{
+        setNotesLoading(false)
       }
     }
     loadNotes();
@@ -43,14 +49,9 @@ function App() {
     }
     
   }
-  return (
-    <Container>
-      <Button onClick={() => setShowAddNoteDialog(true)} 
-      className={`mb-4 ${style.blockedCenter} ${style.flexCenter}`}>
-        <FaPlus />
-        Add New Note
-      </Button>
-      <Row xs={1} md={2} xl={3} className="g-4">
+
+  const notesGrid =
+    <Row xs={1} md={2} xl={3} className={`g-4 ${styles.notesGrid}`}>
         {notes.map((note) => (
           <Col key={note._id}>
             <Note note={note} 
@@ -61,6 +62,26 @@ function App() {
           </Col>
         ))}
       </Row>
+
+
+  return (
+    <Container className={styles.notesPage}>
+      <Button onClick={() => setShowAddNoteDialog(true)} 
+      className={`mb-4 ${style.blockedCenter} ${style.flexCenter}`}>
+        <FaPlus />
+        Add New Note
+      </Button>
+    
+    {notesLoading && <Spinner animation="border" variant="primary"/>}
+    {showNotesLoadingError && <p>Something went wrong. please refresh the page.</p>}
+    {!notesLoading && !showNotesLoadingError && 
+    <>
+    {
+      notes.length > 0 ? notesGrid :<p>You dont have any notes yet!</p>
+    }
+    
+    </>
+    }
 
       {showAddNoteDialog && (
         <AddNotes
