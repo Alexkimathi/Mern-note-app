@@ -9,6 +9,7 @@ import { Note as NoteModel } from "./models/node";
 import AddNotes from "./components/AddEditNotes";
 import {FaPlus} from "react-icons/fa"
 import AddEditNotes from "./components/AddEditNotes";
+import SignupModal from './components/SignupModal';
 
 function App() {
   const [notes, setNotes] = useState<NoteModel[]>([]);
@@ -27,7 +28,7 @@ function App() {
 
         setNotes(notes);
       } catch (error) {
-        console.error(error);
+        // console.error(error);
        setShowNotesLoadingError(true);
       }finally{
         setNotesLoading(false)
@@ -102,6 +103,15 @@ function App() {
           setNoteToEdit(null)
         }}
          />
+      }
+
+      {true &&
+      <SignupModal
+      onDismiss={()=>{}}
+      onSignUpSuccessful={()=>{}}
+
+      />
+      
       }
     </Container>
   );
